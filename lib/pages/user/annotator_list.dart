@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AnnotatorListPage extends StatefulWidget {
-  final void Function(String annotatorId) onAnnotatorSelected;
+  final void Function(String annotatorId, String annotatorName)
+  onAnnotatorSelected;
 
   const AnnotatorListPage({super.key, required this.onAnnotatorSelected});
 
@@ -13,17 +14,17 @@ class AnnotatorListPage extends StatefulWidget {
 class _AnnotatorListPageState extends State<AnnotatorListPage> {
   String? selectedAnnotatorId;
 
-  void onAnnotatorTap(String annotatorId) {
+  void onAnnotatorTap(String annotatorId, String annotatorName) {
     setState(() {
       selectedAnnotatorId = annotatorId;
     });
 
-    // Call parent callback with selected ID
-    widget.onAnnotatorSelected(annotatorId);
+    // Send annotator ID to parent
+    widget.onAnnotatorSelected(annotatorId, annotatorName);
 
-    // Optional: Show confirmation
+    // ✅ Show annotator NAME in SnackBar
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Selected Annotator ID: $annotatorId')),
+      SnackBar(content: Text('Selected Annotator: $annotatorName')),
     );
   }
 
@@ -39,12 +40,8 @@ class _AnnotatorListPageState extends State<AnnotatorListPage> {
                 horizontal: 3.0,
                 vertical: 8.0,
               ),
-              child: Container(
-                height: 180,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey, width: 1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
+              child: SizedBox(
+                height: 200,
                 child: StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
                       .collection('users')
@@ -72,13 +69,15 @@ class _AnnotatorListPageState extends State<AnnotatorListPage> {
                       itemBuilder: (context, index) {
                         final data = docs[index].data() as Map<String, dynamic>;
                         final annotatorId = docs[index].id;
+                        final annotatorName = data['username'] ?? 'No Name';
 
                         return Card(
                           margin: const EdgeInsets.symmetric(vertical: 4),
                           child: ListTile(
                             leading: const Icon(Icons.person_outline),
-                            title: Text(data['username'] ?? 'No Name'),
-                            onTap: () => onAnnotatorTap(annotatorId),
+                            title: Text(annotatorName),
+                            onTap: () =>
+                                onAnnotatorTap(annotatorId, annotatorName),
                           ),
                         );
                       },

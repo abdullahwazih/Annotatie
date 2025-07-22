@@ -1,7 +1,7 @@
 class ProjectModel {
   final String id;
   final String userId;
-  final String? annotatorId; // <- New field added
+  final String? annotatorId;
   final String? type;
   final String? description;
   final List<dynamic>? items;
@@ -11,7 +11,7 @@ class ProjectModel {
   ProjectModel({
     required this.id,
     required this.userId,
-    this.annotatorId, // <- New parameter added
+    this.annotatorId,
     this.type,
     this.description,
     this.items,
@@ -23,7 +23,7 @@ class ProjectModel {
     return ProjectModel(
       id: map['id'],
       userId: map['user_id'],
-      annotatorId: map['annotator_id'], // <- Mapping from map
+      annotatorId: map['annotator_id'],
       type: map['type'],
       description: map['description'],
       items: map['items'] != null ? List<dynamic>.from(map['items']) : null,

@@ -18,23 +18,22 @@ class CustomTexfield extends StatelessWidget {
       child: TextField(
         obscureText: obsecureText,
         controller: controller,
+        style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.tertiary,
-            ),
+            borderSide: BorderSide(color: Colors.grey.shade200),
             borderRadius: BorderRadius.circular(10.0),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.primary,
-            ),
+            borderSide: BorderSide(color: Colors.grey.shade400),
             borderRadius: BorderRadius.circular(10.0),
           ),
-          fillColor: Theme.of(context).colorScheme.secondary,
-
+          fillColor: Colors.white,
           filled: false,
-          hintText: hintText,
+          labelText: hintText,
+          labelStyle: const TextStyle(
+            color: Colors.white,
+          ), // Set hint text color to white
         ),
       ),
     );

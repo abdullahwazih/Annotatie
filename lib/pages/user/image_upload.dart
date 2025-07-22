@@ -146,16 +146,6 @@ class _ImageUploadState extends State<ImageUpload> {
               ),
             ],
           ),
-          const SizedBox(height: 10),
-          ElevatedButton(
-            onPressed: () async {
-              final folderPath = await uploadImages();
-              if (folderPath != null) {
-                widget.onUploadComplete(folderPath);
-              }
-            },
-            child: const Text('Upload'),
-          ),
         ],
       ),
     );

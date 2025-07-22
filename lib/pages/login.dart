@@ -1,5 +1,4 @@
 import 'package:annotatiev02/Auth/auth_service.dart';
-import 'package:annotatiev02/components/button.dart';
 import 'package:annotatiev02/components/custom_texfield.dart';
 import 'package:annotatiev02/components/sized_box.dart';
 import 'package:flutter/material.dart';
@@ -10,23 +9,16 @@ class Login extends StatelessWidget {
   Login({super.key});
 
   void login(BuildContext context) async {
-    // Call AuthService to log in
     String? result = await AuthService().logIn(
       email: emailController.text,
       password: passwordController.text,
     );
 
     if (result == 'user') {
-      // Navigate to user home page
-      // ignore: use_build_context_synchronously
       Navigator.pushNamed(context, '/userHome');
     } else if (result == 'admin') {
-      // Navigate to admin home page
-      // ignore: use_build_context_synchronously
       Navigator.pushNamed(context, '/annotatorHome');
     } else {
-      // Show error message
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(result ?? 'Login failed')));
@@ -35,50 +27,148 @@ class Login extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Dark blue theme colors
+    final primaryColor = const Color(0xFF0A2342); // dark blue
+    final accentColor = const Color(0xFF274690); // lighter blue
+    final cardColor = const Color(0xFF1B2A49); // card background
+    final bgGradient = LinearGradient(
+      colors: [primaryColor.withOpacity(0.98), accentColor.withOpacity(0.98)],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    );
+
     return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-
-            children: [
-              const Text(
-                'Login Page',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      body: Container(
+        decoration: BoxDecoration(gradient: bgGradient),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Card(
+              color: cardColor,
+              elevation: 12,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(32),
               ),
-              const SizedBox(height: 20),
-              CustomTexfield(
-                hintText: 'Email',
-                obsecureText: false,
-                controller: emailController,
+              margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              child: Padding(
+                padding: const EdgeInsets.all(32.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // App logo or illustration
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 24.0),
+                      child: CircleAvatar(
+                        radius: 48,
+                        backgroundColor: accentColor.withOpacity(0.2),
+                        child: Icon(
+                          Icons.lock_outline,
+                          size: 48,
+                          color: accentColor,
+                        ),
+                      ),
+                    ),
+                    // Welcome text
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Text(
+                        'Welcome Back!',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: Offset(2, 2),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Text(
+                      'Login to your account',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.blueGrey[200],
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    SizedBox(height: 24),
+                    CustomTexfield(
+                      hintText: 'Email',
+                      obsecureText: false,
+                      controller: emailController,
+                    ),
+                    Sizedbox(height: 10),
+                    CustomTexfield(
+                      hintText: 'Password',
+                      obsecureText: true,
+                      controller: passwordController,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(160, 5, 0, 5),
+                      child: GestureDetector(
+                        onTap: () {},
+                        child: Text(
+                          "Forgot Password?",
+                          style: TextStyle(
+                            color: Colors.blueGrey[200],
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: accentColor,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 6,
+                        ),
+                        child: Text(
+                          'Login',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                        onPressed: () => login(context),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Don\'t have an account?',
+                          style: TextStyle(color: Colors.blueGrey[200]),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/register');
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: accentColor,
+                          ),
+                          child: const Text(
+                            'Register',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-              Sizedbox(),
-              CustomTexfield(
-                hintText: 'Password',
-                obsecureText: true,
-                controller: passwordController,
-              ),
-              Sizedbox(),
-              Button(
-                buttonText: 'Log In',
-                onPressed: () => login(context),
-              ), // ✅ Correct
-
-              Sizedbox(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('Don\'t have an account?'),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/register');
-                    },
-                    child: const Text('Register'),
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
         ),
       ),

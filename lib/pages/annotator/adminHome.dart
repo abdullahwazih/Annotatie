@@ -1,4 +1,5 @@
 import 'package:annotatiev02/pages/annotator/image.dart';
+import 'package:annotatiev02/pages/annotator/text_annotation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -84,7 +85,9 @@ class _AnnotatorHomeState extends State<AnnotatorHome> {
 
       final response = await supabase
           .from('projects')
-          .select('id, description, type, uploaded_folder_path')
+          .select(
+            'id,  project_name, description, type, items, uploaded_folder_path',
+          )
           .eq('annotator_id', annotatorId);
 
       setState(() {
@@ -104,80 +107,173 @@ class _AnnotatorHomeState extends State<AnnotatorHome> {
 
   @override
   Widget build(BuildContext context) {
+    final Color darkBlue = const Color(0xFF0D1B2A);
+    final Color cardBlue = const Color(0xFF1B263B);
+    final Color accentBlue = const Color(0xFF415A77);
+    final Color textColor = Colors.white;
+
     if (isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return Scaffold(
+        backgroundColor: darkBlue,
+        body: const Center(
+          child: CircularProgressIndicator(color: Colors.white),
+        ),
+      );
     }
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Annotator Dashboard')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 8),
-            const SizedBox(height: 20),
-            Text(
-              'Welcome, $annotatorName',
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            Text('annotator ID: $annotatorId'),
-            if (role == 'admin') ...[
-              const Text(
-                'Projects assigned to you:',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 8),
-              Expanded(
-                child: isProjectsLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : projects.isEmpty
-                    ? const Center(child: Text('No projects found.'))
-                    : ListView.builder(
-                        itemCount: projects.length,
-                        itemBuilder: (context, index) {
-                          final project = projects[index];
-                          final folderPath =
-                              project['uploaded_folder_path'] ??
-                              'No Folder Path';
-
-                          return Card(
-                            margin: const EdgeInsets.symmetric(vertical: 6),
-                            child: ListTile(
-                              title: Text(
-                                project['description'] ?? 'No Description',
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Type: ${project['type'] ?? 'N/A'}'),
-                                  const SizedBox(height: 4),
-                                  Text('Folder Path: $folderPath'),
-                                ],
-                              ),
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) =>
-                                        ImageGallery(folderPath: folderPath),
-                                  ),
-                                );
-                              },
-                            ),
-                          );
-                        },
+    return Theme(
+      data: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: darkBlue,
+        cardColor: cardBlue,
+        primaryColor: accentBlue,
+        colorScheme: ColorScheme.dark(
+          primary: accentBlue,
+          secondary: accentBlue,
+          background: darkBlue,
+          surface: cardBlue,
+        ),
+        textTheme: ThemeData.dark().textTheme.apply(
+          bodyColor: textColor,
+          displayColor: textColor,
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      child: Scaffold(
+        backgroundColor: darkBlue,
+        body: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(10, 50, 10, 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Welcome, $annotatorName',
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
-              ),
-            ] else ...[
-              const Center(
-                child: Text(
-                  'You do not have permission to view projects.',
-                  style: TextStyle(color: Colors.red, fontSize: 16),
+                    ),
+                    IconButton(
+                      onPressed: () async {
+                        await FirebaseAuth.instance.signOut();
+                        // ignore: use_build_context_synchronously
+                        Navigator.pushReplacementNamed(context, '/login');
+                      },
+                      icon: const Icon(Icons.logout, color: Colors.white),
+                    ),
+                  ],
                 ),
               ),
+              if (role == 'admin') ...[
+                const Text(
+                  'Projects assigned',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Expanded(
+                  child: isProjectsLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(color: Colors.white),
+                        )
+                      : projects.isEmpty
+                      ? const Center(
+                          child: Text(
+                            'No projects found.',
+                            style: TextStyle(color: Colors.white70),
+                          ),
+                        )
+                      : ListView.builder(
+                          itemCount: projects.length,
+                          itemBuilder: (context, index) {
+                            final project = projects[index];
+                            final folderPath =
+                                project['uploaded_folder_path'] ??
+                                'No Folder Path';
+
+                            return Card(
+                              margin: const EdgeInsets.symmetric(vertical: 6),
+                              color: cardBlue,
+                              child: ListTile(
+                                title: Text(
+                                  project['project_name'] ??
+                                      'Name of the Project',
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Type: ${project['type'] ?? 'N/A'}',
+                                      style: const TextStyle(
+                                        color: Colors.white70,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                  ],
+                                ),
+                                onTap: () {
+                                  final List<String> itemsList =
+                                      List<String>.from(project['items'] ?? []);
+                                  final String projectId = project['id'];
+                                  final String type =
+                                      project['type'] ?? 'Unknown';
+                                  final String folderPath =
+                                      project['uploaded_folder_path'] ?? '';
+
+                                  if (type.toLowerCase() == 'text') {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => TextAnnotationPage(
+                                          projectId: projectId,
+                                          annotatorId: annotatorId,
+                                        ),
+                                      ),
+                                    );
+                                  } else if (type.toLowerCase() == 'image') {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => ImageGallery(
+                                          folderPath: folderPath,
+                                          items: itemsList,
+                                          projectId: projectId,
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Unsupported project type',
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                ),
+              ] else ...[
+                const Center(
+                  child: Text(
+                    'You do not have permission to view projects.',
+                    style: TextStyle(color: Colors.red, fontSize: 16),
+                  ),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

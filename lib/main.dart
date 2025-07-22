@@ -1,12 +1,10 @@
-import 'package:annotatiev02/pages/annotator/image.dart';
-import 'package:annotatiev02/pages/user/annotator_list.dart';
-import 'package:annotatiev02/pages/user/list.dart';
-import 'package:annotatiev02/pages/user/image_upload.dart';
+import 'package:annotatiev02/pages/user/Dashboard.dart';
 import 'package:annotatiev02/firebase_options.dart';
 import 'package:annotatiev02/pages/annotator/adminHome.dart';
 import 'package:annotatiev02/pages/login.dart';
 import 'package:annotatiev02/pages/register.dart';
-import 'package:annotatiev02/pages/user/user_home_02.dart';
+import 'package:annotatiev02/pages/user/add_text_project.dart';
+import 'package:annotatiev02/pages/user/add_image_project.dart';
 import 'package:annotatiev02/theme/light_mode.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -28,18 +26,20 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: lightMode,
-      home: AnnotatorHome(),
+      home: Login(),
       routes: {
         '/login': (context) => Login(),
         '/register': (context) => Register(),
         '/annotatorHome': (context) => AnnotatorHome(),
+        '/userHome': (context) => Dashboard(),
+        '/addProject': (context) => AddImageProject(),
+        '/addTextProject': (context) => AddTextProject(),
       },
     );
   }

@@ -12,7 +12,7 @@ class Button extends StatelessWidget {
       child: Text(
         buttonText,
         style: TextStyle(
-          color: Theme.of(context).colorScheme.secondary,
+          color: Theme.of(context).colorScheme.primary,
           fontSize: 16.0,
         ),
       ),

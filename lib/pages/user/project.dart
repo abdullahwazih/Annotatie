@@ -5,15 +5,17 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class Project extends StatelessWidget {
   final List<String> items;
   final String? type;
-  final String? description;
+  final List<String>? descriptionList;
   final String? uploadedFolderPath;
-  final String? annotatorId; // <- New field added
+  final String? annotatorId;
+  final String projectName; // Added projectName here
 
   const Project({
     super.key,
     required this.items,
+    required this.projectName, // require projectName in constructor
     this.type,
-    this.description,
+    this.descriptionList,
     this.uploadedFolderPath,
     this.annotatorId,
   });
@@ -33,11 +35,12 @@ class Project extends StatelessWidget {
     try {
       await supabase.from('projects').insert({
         'user_id': uid,
-        'annotator_id': annotatorId, // Matches the new column
+        'annotator_id': annotatorId,
         'type': type,
-        'description': description,
-        'items': items, // List<String> is valid for jsonb
+        'description': descriptionList,
+        'items': items,
         'uploaded_folder_path': uploadedFolderPath,
+        'project_name': projectName,
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
